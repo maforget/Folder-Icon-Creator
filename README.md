@@ -20,3 +20,4 @@ Usage: Folder Icon Creator.exe [-ch] -f Folder1 [Folder2] [...]
 ## Example
 ![](https://user-images.githubusercontent.com/11904426/49398126-70903500-f70b-11e8-9331-8547e333f993.jpg)
 
+https://img.shields.io/github/downloads/maforget/Folder-Icon-Creator/total.svg
