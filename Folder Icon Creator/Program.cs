@@ -317,7 +317,7 @@ namespace Folder_Icon_Creator
             // Write .ini settings to the desktop.ini file+
             //IniWriter.WriteValue("ViewState", "Mode", "5", iniFilePath);
             //IniWriter.WriteValue("ViewState", "Vid", "{8BEBB290-52D0-11D0-B7F4-00C04FD706EC}", iniFilePath);
-            //IniWriter.WriteValue("ViewState", "FolderType", "Videos", iniFilePath);
+            IniWriter.WriteValue("ViewState", "FolderType", "Videos", iniFilePath);
             //IniWriter.WriteValue("ViewState", "Logo", "Folder.ico", iniFilePath);
             IniWriter.WriteValue(".ShellClassInfo", "IconResource", "folder.ico,0", iniFilePath);
             IniWriter.WriteValue(".ShellClassInfo", "IconFile", "folder.ico", iniFilePath);
