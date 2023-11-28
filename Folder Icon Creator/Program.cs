@@ -264,7 +264,7 @@ namespace Folder_Icon_Creator
                     image.Write(memStream, MagickFormat.Png32);
                     //string pngFile = path.Replace(".jpg", ".png"); if (File.Exists(pngFile)) File.Delete(pngFile); image.Write(pngFile);//Save PNG File to the folder
                 }
-
+                memStream.Seek(0, SeekOrigin.Begin);
 
                 using (MagickImage image = new MagickImage(memStream))
                 {
