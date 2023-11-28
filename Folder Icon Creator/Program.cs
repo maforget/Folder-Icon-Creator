@@ -18,10 +18,10 @@ namespace Folder_Icon_Creator
     sealed class Options
     {
         #region Standard Option Attribute
-        [OptionArray('f', "folders", Required = true, HelpText = "Folders to process")]
-        public string[] InputFolders { get; set; }
+        [Option('f', "folders", Required = true, HelpText = "Folders to process")]
+        public IEnumerable<string> InputFolders { get; set; }
 
-        [Option('p', "poster", HelpText = "Filename for the Image file that will be used to create the Folder Icon", DefaultValue = "folder.jpg")]
+        [Option('p', "poster", HelpText = "Filename for the Image file that will be used to create the Folder Icon", Default = "folder.jpg")]
         public string PosterFileNameWithExtension { get; set; }
 
         [Option('d', "delete", HelpText = "Deletes folders that don't have any media files or subfolders")]
@@ -38,31 +38,6 @@ namespace Folder_Icon_Creator
 
         [Option('r', "force", HelpText = "Recreates icons from folders that already have a folder.ico")]
         public bool ForceIfAlreadyExists { get; set; }
-        #endregion
-
-        #region Help Screen
-        [HelpOption]
-        public string GetUsage()
-        {
-            var help = new HelpText
-            {
-                Heading = new HeadingInfo(Assembly.GetExecutingAssembly().GetName().Name, Assembly.GetExecutingAssembly().GetName().Version.ToString()),
-                //Copyright = new CopyrightInfo("<<app author>>", 2014),
-                AdditionalNewLineAfterOption = false,
-                AddDashesToOption = true,
-                MaximumDisplayWidth = 300,
-            };
-            //help.AddPreOptionsLine("<<license details here.>>");
-            help.AddPreOptionsLine(" ");
-            help.AddPreOptionsLine("You can modify the list of extensions that are flagged as media files and other filetypes you don't want to hide in the COnfig.ini File");
-            help.AddPreOptionsLine("Usage: Folder Icon Creator.exe [-d] [-r] [-c] [-h] [-l] [-p poster.jpg] -f Folder1 [Folder2] [...]");
-            help.AddPreOptionsLine("Usage: Folder Icon Creator.exe [-ch] -f Folder1 [Folder2] [...]");
-
-            help.AddOptions(this);
-
-            //HelpText help = HelpText.AutoBuild(this, (HelpText current) => HelpText.DefaultParsingErrorsHandler(this, current));
-            return help;
-        }
         #endregion
     }
 
@@ -94,18 +69,46 @@ namespace Folder_Icon_Creator
 
         static void Main(string[] args)
         {
-            var options = new Options();
-
-            if (!CommandLine.Parser.Default.ParseArguments(args, options))
-            {
-                Console.ReadLine();
-                Environment.Exit(1);
-            }
-
-            DoCoreTask(options);
+            var parser = new CommandLine.Parser(with => with.HelpWriter = null);
+            var parserResults = parser.ParseArguments<Options>(args);
+            parserResults
+                .WithParsed(option =>
+                {
+                    DoCoreTask(option);
+                })
+                .WithNotParsed(errs =>
+                {
+                    GetUsage(parserResults, errs);
+                    //Console.ReadLine();
+                    Environment.Exit(1);
+                });
 
             Environment.Exit(0);
         }
+
+        #region Help Screen
+        public static void GetUsage<T>(ParserResult<T> result, IEnumerable<Error> errs)
+        {
+            var helpText = HelpText.AutoBuild(result, help =>
+            {
+                help.Heading = new HeadingInfo(Assembly.GetExecutingAssembly().GetName().Name, Assembly.GetExecutingAssembly().GetName().Version.ToString());
+                //help.Copyright = new CopyrightInfo("<<app author>>", 2014);
+                help.AdditionalNewLineAfterOption = false;
+                help.AddDashesToOption = true;
+                help.MaximumDisplayWidth = 300;
+
+                //help.AddPreOptionsLine("<<license details here.>>");
+                help.AddPreOptionsLine(" ");
+                help.AddPreOptionsLine("You can modify the list of extensions that are flagged as media files and other filetypes you don't want to hide in the COnfig.ini File");
+                help.AddPreOptionsLine("Usage: Folder Icon Creator.exe [-d] [-r] [-c] [-h] [-l] [-p poster.jpg] -f Folder1 [Folder2] [...]");
+                help.AddPreOptionsLine("Usage: Folder Icon Creator.exe [-ch] -f Folder1 [Folder2] [...]");
+                return HelpText.DefaultParsingErrorsHandler(result, help);
+            }, e => e);
+
+            //HelpText help = HelpText.AutoBuild(this, (HelpText current) => HelpText.DefaultParsingErrorsHandler(this, current));
+            Logger.Out(helpText);
+        }
+        #endregion
 
         private static void DoCoreTask(Options options)
         {
@@ -118,8 +121,8 @@ namespace Folder_Icon_Creator
             if (!string.IsNullOrEmpty(options.PosterFileNameWithExtension.Trim()) && options.PosterFileNameWithExtension.Trim() != "folder.jpg")
                 PosterFileNameWithExtension = options.PosterFileNameWithExtension.ToLowerInvariant();
 
-            if (options.InputFolders.Count() == 0)
-                Logger.Out("No Options Selected, see help\n\n\n" + options.GetUsage());//Will never be it
+            //if (options.InputFolders.Count() == 0)
+            //    Logger.Out("No Options Selected, see help\n\n\n" + options.GetUsage());//Will never be it
 
             Logger.Out("Enumerating Folders");
             List<string> folderList = new List<string>();
