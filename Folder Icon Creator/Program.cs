@@ -509,8 +509,9 @@ namespace Folder_Icon_Creator
             {
                 if (IsWindows10() == true)
                 {
-                    Process.Start(path, "-show");
-                }
+                    //Process.Start(path, "-show");
+                    Refresh.Run(); // This will call the SHChangeNotify function to refresh the icon cache
+				}
                 else
                 {
                     Process.Start(path, "-ClearIconCache");
