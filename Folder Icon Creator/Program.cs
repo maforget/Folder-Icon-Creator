@@ -184,7 +184,7 @@ namespace Folder_Icon_Creator
             FilesToDelete.AddRange(filesToDelete);
 
             var file = filesList.Where(x => x.ToLowerInvariant().EndsWith(PosterFileNameWithExtension)).FirstOrDefault();
-            var icoFile = filesList.Where(x => x.ToLowerInvariant().EndsWith("folder.ico")).FirstOrDefault();
+            var icoFile = filesList.FirstOrDefault(x => x.EndsWith("folder.ico", StringComparison.InvariantCultureIgnoreCase));
 
             var toHide = FilterToHide(filesList);
             FilesToHide.AddRange(toHide);
